@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 export default function ContactUsPage() {
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
@@ -18,7 +19,7 @@ export default function ContactUsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, message }),
+        body: JSON.stringify({ name, email, message }),
       });
 
       const data = await res.json();
@@ -34,6 +35,7 @@ export default function ContactUsPage() {
 
     setLoading(false);
     setName('');
+    setEmail('');
     setMessage('');
   };
 
@@ -50,6 +52,19 @@ export default function ContactUsPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="flex flex-col space-y-2">
+          <label htmlFor="email" className="text-sm font-medium">Your Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
