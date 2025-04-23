@@ -11,7 +11,7 @@ const Header = () => {
   const { user } = useUser();
   return (
     <div className="px-10 lg:px-32 xl:px-48 2xl:px-56 p-4 flex justify-between items-center shadow-sm">
-      <Link href={"/"} className="cursor-pointer"><Image src={"/logo.svg"} alt="logo" width={100} height={50} /></Link>
+      <Link href={"/"} className="cursor-pointer"><Image src={"/logofinal.png"} alt="logo" width={100} height={50} /></Link>
       <div className="gap-3 flex items-center">
         {user ? (
           // ✅ CHANGED outline variant to custom teal outline
