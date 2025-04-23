@@ -21,7 +21,7 @@ const Footer = () => {
           Return & Refund Policy
         </Link>
         
-        <Link href="/about-us" className="text-gray-800 font-medium mb-2 hover:underline">
+        <Link href="/about-us" className="ml-3 text-gray-800 font-medium mb-2 hover:underline">
           About Us
         </Link>
 
