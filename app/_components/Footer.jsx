@@ -24,6 +24,9 @@ const Footer = () => {
         <Link href="/about-us" className="ml-3 text-gray-800 font-medium mb-2 hover:underline">
           About Us
         </Link>
+        <Link href="/contact-us" className="ml-3 text-gray-800 font-medium mb-2 hover:underline">
+          Contact Us
+        </Link>
 
        
         <div className="mt-8 text-sm flex flex-col items-center">
