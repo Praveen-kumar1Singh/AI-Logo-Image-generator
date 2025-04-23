@@ -1,6 +1,9 @@
 "use client";
 import Link from "next/link";
 import React from "react";
+import {
+  FaHeart,
+} from "react-icons/fa";
 
 const Footer = () => {
   const year = new Date().getFullYear();
