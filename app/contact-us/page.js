@@ -1,23 +1,24 @@
 "use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function ContactUsPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setStatus("");
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
+      const res = await fetch("/api/contact", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, email, message }),
       });
@@ -25,18 +26,21 @@ export default function ContactUsPage() {
       const data = await res.json();
 
       if (res.status === 200) {
-        setStatus('Message sent successfully!');
+        setStatus("✅ Message sent successfully!");
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else if (res.status === 404) {
+        setStatus("⚠️ User not found. Please register first.");
       } else {
-        setStatus(data.message || 'Error sending message');
+        setStatus(data.message || "❌ Error sending message.");
       }
     } catch (error) {
-      setStatus('Error sending message');
+      console.error("Submit error:", error);
+      setStatus("❌ Something went wrong. Please try again.");
     }
 
     setLoading(false);
-    setName('');
-    setEmail('');
-    setMessage('');
   };
 
   return (
@@ -44,7 +48,9 @@ export default function ContactUsPage() {
       <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex flex-col space-y-2">
-          <label htmlFor="name" className="text-sm font-medium">Your Name</label>
+          <label htmlFor="name" className="text-sm font-medium">
+            Your Name
+          </label>
           <input
             type="text"
             id="name"
@@ -57,7 +63,9 @@ export default function ContactUsPage() {
         </div>
 
         <div className="flex flex-col space-y-2">
-          <label htmlFor="email" className="text-sm font-medium">Your Email</label>
+          <label htmlFor="email" className="text-sm font-medium">
+            Your Email
+          </label>
           <input
             type="email"
             id="email"
@@ -70,7 +78,9 @@ export default function ContactUsPage() {
         </div>
 
         <div className="flex flex-col space-y-2">
-          <label htmlFor="message" className="text-sm font-medium">Your Message</label>
+          <label htmlFor="message" className="text-sm font-medium">
+            Your Message
+          </label>
           <textarea
             id="message"
             name="message"
@@ -83,7 +93,13 @@ export default function ContactUsPage() {
         </div>
 
         {status && (
-          <div className={`text-sm ${status.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
+          <div
+            className={`text-sm font-medium ${
+              status.includes("Error") || status.includes("❌") || status.includes("⚠️")
+                ? "text-red-600"
+                : "text-green-600"
+            }`}
+          >
             {status}
           </div>
         )}
@@ -93,7 +109,7 @@ export default function ContactUsPage() {
           disabled={loading}
           className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
         >
-          {loading ? 'Sending...' : 'Send Message'}
+          {loading ? "Sending..." : "Send Message"}
         </button>
       </form>
     </main>
