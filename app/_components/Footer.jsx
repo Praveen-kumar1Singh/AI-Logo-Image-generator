@@ -38,6 +38,15 @@ const Footer = () => {
   return (
     <footer className="mt-20 bg-gray-100 dark:bg-gray-900 py-8 border-t border-gray-300 dark:border-gray-700">
       <div className="text-center text-gray-800 dark:text-gray-300">
+        <Link href="/privacy-policy" className="text-gray-800 font-medium mb-2 hover:underline">
+          Privacy Policy
+        </Link>
+        <Link href="/terms-and-conditions" className="ml-3 text-gray-800 font-medium hover:underline">
+          Terms & Conditions
+        </Link>
+        <Link href="/return-refund" className="ml-3 text-gray-800 font-medium hover:underline">
+          Return & Refund Policy
+        </Link>
         <h2 className="text-lg font-semibold mb-4">Contributors</h2>
 
         <ul className="flex flex-wrap justify-center gap-8 text-sm">
