@@ -41,7 +41,7 @@ export default function AboutUsPage() {
       </p>
 
       <p className="mb-10">
-        The project is developed by a passionate team of students and developers, each contributing their own expertise in full-stack, frontend, and backend development.
+        The project is developed by a passionate team of students, each contributing their own expertise in full-stack, frontend, and backend development.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">Contributors</h2>
