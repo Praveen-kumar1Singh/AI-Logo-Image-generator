@@ -28,20 +28,13 @@ An **AI-powered logo generator** that uses cutting-edge tools to create beautifu
 
 - 👨‍💻 [**Praveen Kumar Singh**](https://github.com/Praveen-kumar1Singh)  
   - [LinkedIn](https://linkedin.com/in/praveenkrsingh01)  
-  - [Instagram](https://instagram.com/your_instagram_here)  
   - [GitHub](https://github.com/Praveen-kumar1Singh)
 
-- 👩‍💻 [**Anubhuti**](https://github.com/anubhuti123)  
-  - [LinkedIn](https://linkedin.com/in/anubhuti-link)  
-  - [GitHub](https://github.com/anubhuti123)
+- 👩‍💻 [**Anubhuti**]
 
-- 👩‍💻 [**Komal**](https://github.com/komal123)  
-  - [LinkedIn](https://linkedin.com/in/komal-link)  
-  - [GitHub](https://github.com/komal123)
+- 👩‍💻 [**Komal**]
 
-- 👨‍💻 [**Tushar**](https://github.com/tushar123)  
-  - [LinkedIn](https://linkedin.com/in/tushar-link)  
-  - [GitHub](https://github.com/tushar123)
+- 👨‍💻 [**Tushar**]
 
 > Made with ❤️ by the **BlueCode Team** – 2025
 
