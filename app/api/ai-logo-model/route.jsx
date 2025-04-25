@@ -1,71 +1,68 @@
-import { fal } from "@fal-ai/client";
-import { AILogoPrompt } from "@/configs/AiModel";
+import axios from 'axios';
 import { db } from "@/configs/FirebaseConfig";
 import { doc, setDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
-import cloudinary from "@/lib/cloudinaryConfig"; // Import cloudinary configuration
+import cloudinary from "@/lib/cloudinaryConfig";
 import { NextResponse } from "next/server";
-
-// Set Fal API Key
-fal.config({ credentials: process.env.FAL_KEY });
 
 export async function POST(req) {
   const { prompt, email, title, desc } = await req.json();
 
   try {
-    console.log("Received request data:", { prompt, email, title, desc });
+    console.log("📨 Request received:", { prompt, email, title, desc });
 
-    // Step 1: Get refined prompt from Gemini (AILogoPrompt)
-    const AiPromptResult = await AILogoPrompt.sendMessage(prompt);
-    const AIPrompt = JSON.parse(AiPromptResult.response.text()).prompt;
+    // Call DeepInfra to generate the logo
+    const response = await axios.post(
+      'https://api.deepinfra.com/v1/openai/images/generations',
+      {
+        prompt: prompt,
+        size: '512x512',
+        n: 1,
+        model: 'stabilityai/sdxl-turbo'
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.DEEPINFRA_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
-    // Validate AIPrompt
-    if (!AIPrompt || typeof AIPrompt !== 'string') {
-      throw new Error("Invalid prompt returned from AI prompt service");
+    // 🔍 Inspect the full response for debugging
+    const imageData = response.data?.data?.[0];
+    console.log("🔍 DeepInfra image response:", imageData);
+
+    // ✅ Extract the correct image URL or base64
+    const imageUrl = imageData?.url || imageData?.image_url;
+    const base64Data = imageData?.b64_json;
+
+    let base64ImageWithMime;
+
+    if (imageUrl) {
+      // If URL is available, fetch and convert it to base64
+      const imageBuffer = await fetch(imageUrl).then(res => res.arrayBuffer());
+      const base64Image = Buffer.from(imageBuffer).toString("base64");
+      base64ImageWithMime = `data:image/png;base64,${base64Image}`;
+    } else if (base64Data) {
+      base64ImageWithMime = `data:image/png;base64,${base64Data}`;
+    } else {
+      throw new Error("❌ No image data (URL or base64) returned by DeepInfra API.");
     }
 
-    console.log("AIPrompt:", AIPrompt);
-
-    // Step 2: Call Fal.AI using their SDK to generate the logo
-    const result = await fal.subscribe("fal-ai/flux-pro/v1.1-ultra", {
-      input: {
-        prompt: AIPrompt,
-        output_format: "png", // Ensuring image format is correct
-        aspect_ratio: "1:1",  // Standard aspect ratio for logos
-        num_images: 1,        // Only one image needed
-        enable_safety_checker: true, // Ensure safety check is on
-        sync_mode: true,      // Synchronous mode
-      },
-      logs: true,            // Logging to debug Fal.AI progress
-      onQueueUpdate: (update) => {
-        console.log("Fal.AI update:", update.status);
-      },
-    });
-
-    // Ensure result contains the image URL
-    const imageUrl = result?.data?.images?.[0]?.url;
-    if (!imageUrl) throw new Error("No image URL returned by Fal.AI");
-
-    console.log("Generated image URL:", imageUrl);
-
-    // Step 3: Convert image to base64
-    const imageBuffer = await fetch(imageUrl).then(res => res.arrayBuffer());
-    const base64Image = Buffer.from(imageBuffer).toString("base64");
-    const base64ImageWithMime = `data:image/png;base64,${base64Image}`;
-
-    // Step 4: Upload the base64 image to Cloudinary
+    // ☁️ Upload image to Cloudinary
     const uploadResult = await cloudinary.uploader.upload(base64ImageWithMime, {
-      folder: "logos",  // Store images in a specific folder in Cloudinary
-      resource_type: "auto",  // Automatically detect the file type (png, jpeg, etc.)
+      folder: "logos",
+      resource_type: "auto"
     });
 
-    const uploadedImageUrl = uploadResult.secure_url; // Get the Cloudinary URL
+    const uploadedImageUrl = uploadResult.secure_url;
+    console.log("✅ Uploaded to Cloudinary:", uploadedImageUrl);
 
-    // Now save this URL to Firestore instead of the full base64 string
+    // 🧠 Prepare metadata to store in Firestore
     const logoData = {
-      image: uploadedImageUrl,  // Store the URL of the image in Firestore
-      title: title,
-      desc: desc,
-      prompt: AIPrompt,
+      image: uploadedImageUrl,
+      title,
+      desc,
+      prompt,
       id: Date.now(),
     };
 
@@ -73,21 +70,18 @@ export async function POST(req) {
     const userDoc = await getDoc(userDocRef);
 
     if (!userDoc.exists()) {
-      console.log("Creating new user document");
       await setDoc(userDocRef, { logos: [logoData] });
     } else {
-      console.log("Updating existing user document with new logo");
       await updateDoc(userDocRef, {
-        logos: arrayUnion(logoData),  // Adding logoData to the logos array
+        logos: arrayUnion(logoData),
       });
     }
 
-    // Return the generated logo URL in the response
+    // 🎉 Send back the final URL
     return NextResponse.json({ image: uploadedImageUrl });
 
   } catch (err) {
-    // Handle errors and log them
-    console.error("❌ Fal API error:", err?.response?.data || err.message);
+    console.error("❌ Error during logo generation:", err?.response?.data || err.message);
     return NextResponse.json({ error: "Failed to generate logo" }, { status: 500 });
   }
 }
